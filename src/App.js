@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import '@vkontakte/vkui/dist/vkui.css';
-import { View, Panel, PanelHeader, FormLayout, Button, Input, CardGrid, Card } from '@vkontakte/vkui';//пакеты из вк
+import { View, Panel, PanelHeader, FormLayout, Button, Input, CardGrid, Card,Link } from '@vkontakte/vkui';//пакеты из вк
 // import Icon24CameraOutline from '@vkontakte/icons/dist/24/camera_outline';//это из https://vkcom.github.io/icons/#24/smile
 // import Icon24Send from '@vkontakte/icons/dist/24/send';
 // import Icon24Smile from '@vkontakte/icons/dist/24/smile';
@@ -70,6 +70,7 @@ class App extends Component {
 										{this.state.calc}
 									</Card>
 								</CardGrid> : null}
+								<Link href="https://yandex.ru/web-maps/covid19?ll=52.835283%2C-1.561997&z=2" target="_blank">яндекс карта для получения информации по covid19</Link>
 						</FormLayout>
 					</div>
 				</Panel>

@@ -1,0 +1,1 @@
+в main.цифры.chunk надо исправить ссылку на картинку из /static  в url(../media/biohazard.e778edf0.png)
