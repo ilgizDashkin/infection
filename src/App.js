@@ -7,16 +7,20 @@ import { View, Panel, PanelHeader, FormLayout, Button, Input, CardGrid, Card, Li
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 import Icon28StatisticsOutline from '@vkontakte/icons/dist/28/statistics_outline';
+import Icon24Forward10 from '@vkontakte/icons/dist/24/forward_10';
 import AnyChart from 'anychart-react'
+// import iconv from 'iconv-lite'
+// import Parser from 'rss-parser'
 
 class App extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			infection: 0,
-			recover: 0,
-			dead: 0,
-			calc: ''
+			infection: '',
+			recover: '',
+			dead: '',
+			calc: '',
+			rss: ''
 		}
 	}
 
@@ -40,7 +44,7 @@ class App extends Component {
 		this.setState({ dead: Number(event.target.value) });
 	}
 	onClickHandler = () => {
-		if (this.state.infection && this.state.recover && this.state.dead) {
+		if (Number(this.state.infection) && Number(this.state.recover) && Number(this.state.dead)) {
 			let proc = this.state.infection / 100
 			let proc_rec = (this.state.recover / proc).toFixed(2)
 			let proc_dead = (this.state.dead / proc).toFixed(2)
@@ -50,9 +54,33 @@ class App extends Component {
 			Зараженно в России ${((this.state.infection / 146745098) * 100).toFixed(4)}% населения.`
 			})
 			localStorage.coronechance = JSON.stringify(this.state);//сохраняем стейт в локалсторадже
-		} else { this.setState({ calc: '' }) }
+		} else {
+			this.setState({
+				infection: '',
+				recover: '',
+				dead: '',
+				calc: ''
+			})
+		}
 	}
 
+	// запрос к серверу за данными
+	requestData = async () => {//использовал прокси чтоб обойти cors https://medium.com/@dtkatz/3-ways-to-fix-the-cors-error-and-how-access-control-allow-origin-works-d97d55946d9
+		//   const response = await fetch('https://cors-anywhere.herokuapp.com/https://www.rospotrebnadzor.ru/region/rss/rss.php?rss=y')
+		// const response = await fetch('rss.xml')
+		//   const data = await response.text().then(str => new window.DOMParser().parseFromString(str, "text/xml"))
+		//   console.log(data)
+		try {
+			const response = await fetch(`https://ilgiz.h1n.ru/rss.php`)
+			const data = await response.json()
+			let result = data["rospotreb"].filter(word => word[0][0][0].indexOf('COVID-2019') !== -1);//фильтрую новости по ключевым словам
+			console.log(result[0])
+			result = result[0][1][0][0]
+			this.setState({ rss: result })
+		} catch (e) {
+			console.error(e)
+		}
+	}
 
 	render() {
 		return (
@@ -93,6 +121,13 @@ class App extends Component {
 								title="выздоровевших/смертей"
 							/> : null}
 							<Link href="https://yandex.ru/web-maps/covid19?ll=52.835283%2C-1.561997&z=2" target="_blank">яндекс карта для получения информации по covid19</Link>
+							<Button  onClick={this.requestData} before={<Icon24Forward10 />} size="l">
+								новости роспотребнадзора COVID-2019
+							</Button>
+							<div className='text-white'
+								dangerouslySetInnerHTML={{ __html: this.state.rss//так можно вставить строку html в react
+								 }}>
+							</div>
 						</FormLayout>
 					</div>
 				</Panel>
